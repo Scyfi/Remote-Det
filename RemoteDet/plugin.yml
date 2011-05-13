@@ -1,0 +1,8 @@
+name: Remote Det
+main: org.scyfi.RemoteDet.RemoteDet
+version: 0.1
+author: Scyfi
+commands:
+   rd:
+    description: Toggles use of a wand item for showing light levels
+    usage: /<command>
