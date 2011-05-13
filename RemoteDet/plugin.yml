@@ -1,6 +1,6 @@
 name: Remote Det
 main: org.scyfi.RemoteDet.RemoteDet
-version: 0.1
+version: 0.2
 author: Scyfi
 commands:
    rd:

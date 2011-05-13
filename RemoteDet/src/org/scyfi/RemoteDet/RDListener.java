@@ -32,7 +32,9 @@ public class RDListener extends PlayerListener{
 		else if(event.getAction().equals(Action.LEFT_CLICK_AIR)){
 			if(player.getItemInHand().getType() == Material.STONE_BUTTON){
 				if (plugin.isRemoteArmed(player)){
-					plugin.detonateTNT(player);
+					if ((plugin.armedRemote.get(player)).getType() == Material.TNT){
+						plugin.detonateTNT(player);
+					}
 				}
 			}
 		}
