@@ -17,13 +17,18 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.event.Event;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class RemoteDet extends JavaPlugin{
 	
 	public final Logger log = Logger.getLogger("Minecraft");
 	public final String pluginName = "Remote Det";
+	public static PermissionHandler permissionHandler;
 	
 	private RDListener playerListener = new RDListener(this);
 	CraftTNTPrimed tntp;
@@ -35,6 +40,7 @@ public class RemoteDet extends JavaPlugin{
 		log.info(pluginName + " - Version " + this.getDescription().getVersion() + " Enabled");
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
+		setupPermissions();
 		
 	}
 	
@@ -56,13 +62,38 @@ public class RemoteDet extends JavaPlugin{
 			return false;
 	}
 	
+	@SuppressWarnings("static-access")
+	private void setupPermissions() {
+	      Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
+
+	      if (this.permissionHandler == null) {
+	          if (permissionsPlugin != null) {
+	              this.permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+	          }else {
+	              log.info("Permission system not detected, defaulting to OP");
+	          } 
+	      }
+	  }
+	
+	public boolean checkPermission(Player player, String perm){
+		if (permissionHandler == null){
+			return true;
+		}else{
+			return 	permissionHandler.has(player, perm);
+		}
+	}
+	
 	public void toggleRemote(Player player){
-		if(remoteEnabled.contains(player)){
-			remoteEnabled.remove(player);
-			player.sendMessage(ChatColor.YELLOW + "Remote Detonator disabled!");
-		} else {
-			remoteEnabled.add(player);
-			player.sendMessage(ChatColor.YELLOW + "Remote Detonator enabled!");
+		if (!checkPermission(player, "remotedet.remote")){
+			player.sendMessage("You do not have permission to use RemoteDet.");
+		}else{
+			if(remoteEnabled.contains(player)){
+				remoteEnabled.remove(player);
+				player.sendMessage(ChatColor.YELLOW + "Remote Detonator disabled!");
+			} else {
+				remoteEnabled.add(player);
+				player.sendMessage(ChatColor.YELLOW + "Remote Detonator enabled!");
+			}
 		}
 	}
 	
